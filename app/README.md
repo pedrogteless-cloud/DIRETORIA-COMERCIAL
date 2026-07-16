@@ -1,4 +1,4 @@
-# Comissão dos Vendedores · Grupo Ley
+# Diretoria Comercial · Grupo Ley
 
 > Antes de editar qualquer coisa (ou apontar o Claude Code pra este repo),
 > leia o [`CONTEXT.md`](./CONTEXT.md) — ele reúne as decisões de negócio

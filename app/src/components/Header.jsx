@@ -21,7 +21,7 @@ export default function Header({
         <div className="text-[11px] tracking-widest uppercase text-accent font-semibold mb-1.5">
           Grupo Ley · Colchões
         </div>
-        <h1 className="font-display text-3xl font-semibold m-0">Comissão dos vendedores</h1>
+        <h1 className="font-display text-3xl font-semibold m-0">Diretoria Comercial</h1>
       </div>
       <div className="flex gap-2.5 items-center flex-wrap">
         <div className="flex border border-border rounded-lg overflow-hidden">

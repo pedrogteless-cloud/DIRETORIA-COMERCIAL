@@ -25,7 +25,7 @@ export default function LoginScreen() {
         <div className="text-[11px] tracking-widest uppercase text-accent font-semibold mb-1.5">
           Grupo Ley · Colchões
         </div>
-        <h1 className="font-display text-2xl font-semibold mb-6">Comissão dos vendedores</h1>
+        <h1 className="font-display text-2xl font-semibold mb-6">Diretoria Comercial</h1>
 
         <label className="block text-xs text-muted mb-1.5">E-mail</label>
         <input
