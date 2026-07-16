@@ -68,7 +68,7 @@ faturamento).
   importar no Lovable pra economizar créditos — só que o Lovable não
   importa projetos existentes (nem zip, nem repo do GitHub), só exporta
   de dentro dele mesmo. Por isso o caminho é Supabase direto + GitHub +
-  Cloudflare Pages/Vercel.
+  Vercel.
 - **Login único, sem cadastro.** É uma ferramenta de uma pessoa só. RLS
   exige usuário autenticado (`auth.role() = 'authenticated'`); o usuário é
   criado manualmente no painel do Supabase, não por uma tela de signup.

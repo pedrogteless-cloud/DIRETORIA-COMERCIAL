@@ -62,11 +62,11 @@ pronto, o caminho mais direto é:
    npm install
    npm run dev
    ```
-4. **Coloque no ar:** Cloudflare Pages (dash.cloudflare.com → Workers & Pages
-   → Create → conecte o repositório do GitHub, mesmo privado) — plano grátis,
-   sem restrição de uso comercial. Configure `VITE_SUPABASE_URL` e
-   `VITE_SUPABASE_ANON_KEY` nas variáveis de ambiente do projeto lá, com os
-   mesmos valores do seu `.env`.
+4. **Coloque no ar:** Vercel (vercel.com → Add New → Project → conecte o
+   repositório do GitHub, mesmo privado). O projeto vive em `app/` dentro do
+   repo, então configure o **Root Directory** como `app` na tela de import.
+   Configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` nas variáveis de
+   ambiente do projeto na Vercel, com os mesmos valores do seu `.env`.
 5. **Configure o bot do Telegram** (opcional, veja seção abaixo).
 6. **Use o Claude Code** (via GitHub App) para qualquer ajuste fino depois.
 
