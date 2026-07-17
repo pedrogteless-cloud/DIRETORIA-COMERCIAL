@@ -41,12 +41,26 @@ export default function PrecosTab() {
     group.items.push(item)
   }
 
+  // "SKU" aqui conta cada preço vendável separadamente — colchão, base
+  // box e conjunto são itens distintos (dá pra vender cada um sozinho),
+  // não só a combinação produto+tamanho.
+  function countSkus(list) {
+    return list.reduce(
+      (s, i) => s + (i.pillow != null) + (i.colchao != null) + (i.base_box != null) + (i.conjunto != null),
+      0
+    )
+  }
+  const totalSkus = countSkus(filtered)
+
   return (
     <div>
       <div className="flex justify-between items-end flex-wrap gap-4 mb-6 border-b border-border pb-5">
         <div>
           <h1 className="font-display text-3xl font-semibold m-0">Tabela de Preços</h1>
-          {validade && <div className="text-xs text-muted mt-1.5">Válida até {fmtDateShort(validade)}</div>}
+          <div className="text-xs text-muted mt-1.5">
+            {validade && <>Válida até {fmtDateShort(validade)} · </>}
+            {groups.length} produto{groups.length !== 1 ? 's' : ''} · {filtered.length} tamanho{filtered.length !== 1 ? 's' : ''} · {totalSkus} SKUs
+          </div>
         </div>
         <div className="flex gap-2.5 items-center flex-wrap">
           <input
@@ -83,7 +97,9 @@ export default function PrecosTab() {
           return (
             <div key={group.produto} className="rounded-xl border border-border overflow-hidden bg-panel">
               <div className="px-4.5 py-2.5 border-b border-border bg-panel2 flex items-center justify-between gap-3 flex-wrap">
-                <span className="font-semibold text-sm">{group.produto}</span>
+                <span className="font-semibold text-sm">
+                  {group.produto} <span className="text-muted font-normal text-xs">· {countSkus(group.items)} SKUs</span>
+                </span>
                 {group.items[0]?.cores ? (
                   <span className="text-muted text-xs">{group.items[0].cores}</span>
                 ) : (
