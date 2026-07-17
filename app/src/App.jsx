@@ -30,6 +30,7 @@ export default function App() {
   const [modal, setModal] = useState(null) // 'upload' | 'exclusions' | 'calendario' | null
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('vendedores') // 'vendedores' | 'precos'
+  const [subTab, setSubTab] = useState('comissao') // 'comissao' | 'carteira' (dentro de Gestão de Vendedores)
 
   async function loadAll() {
     setLoading(true)
@@ -204,9 +205,28 @@ export default function App() {
             onOpenCalendario={() => setModal('calendario')}
           />
 
+          <div className="flex border border-border rounded-lg overflow-hidden w-fit mb-6">
+            <button
+              onClick={() => setSubTab('comissao')}
+              className={`px-4 py-2 text-sm font-medium ${
+                subTab === 'comissao' ? 'bg-accent text-[#0B1524]' : 'text-muted hover:bg-white/5'
+              }`}
+            >
+              Ranking de Comissão
+            </button>
+            <button
+              onClick={() => setSubTab('carteira')}
+              className={`px-4 py-2 text-sm font-medium ${
+                subTab === 'carteira' ? 'bg-accent text-[#0B1524]' : 'text-muted hover:bg-white/5'
+              }`}
+            >
+              Carteira Pendente
+            </button>
+          </div>
+
           {loading && <div className="text-muted text-sm">Carregando…</div>}
 
-          {!loading && sortedPeriods.length === 0 && (
+          {!loading && subTab === 'comissao' && sortedPeriods.length === 0 && (
             <div className="text-center py-16 text-muted">
               <p className="font-display text-xl text-white mb-2">Nenhuma quinzena salva ainda</p>
               <p className="mb-5">Envie os PDFs do relatório L2.3.28 para começar a acompanhar.</p>
@@ -216,7 +236,7 @@ export default function App() {
             </div>
           )}
 
-          {!loading && selectedPeriod && (
+          {!loading && subTab === 'comissao' && selectedPeriod && (
             <>
               <Hero
                 label={periodLabel(fmtDMY(selectedPeriod.data_inicio), fmtDMY(selectedPeriod.data_fim))}
@@ -243,18 +263,12 @@ export default function App() {
             </>
           )}
 
-          {!loading && (
-            <>
-              <div className="flex justify-between items-center text-xs uppercase tracking-wide text-muted mb-3 mt-8 px-0.5">
-                <span>Carteira pendente por representante</span>
-                <span>o que falta entregar, por fábrica</span>
-              </div>
-              <CarteiraPendente
-                rows={carteiraPorRepresentante}
-                dateColch={latestSnapshotByLoja.COLCH?.data_relatorio}
-                dateColtim={latestSnapshotByLoja.COLTIM?.data_relatorio}
-              />
-            </>
+          {!loading && subTab === 'carteira' && (
+            <CarteiraPendente
+              rows={carteiraPorRepresentante}
+              dateColch={latestSnapshotByLoja.COLCH?.data_relatorio}
+              dateColtim={latestSnapshotByLoja.COLTIM?.data_relatorio}
+            />
           )}
 
           {modal === 'upload' && (
