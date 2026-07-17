@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { fmtBRL } from '../lib/format'
+import { fmtBRL, fmtPct } from '../lib/format'
 
 function Sparkline({ history }) {
   if (history.length < 2) return <span className="text-muted text-[11px]">—</span>
@@ -33,53 +33,69 @@ function DeltaBadge({ current, previous }) {
   return <span className={`delta-tag ${cls}`}>{arrow} {Math.abs(pct).toFixed(0)}%</span>
 }
 
-const ROW_GRID = 'grid-cols-[30px_1fr_56px_100px_100px_78px_24px]'
+const ROW_GRID = 'grid-cols-[30px_minmax(0,1fr)_56px_82px_100px_100px_78px_24px]'
+const LOJA_LABELS = {
+  COLCH: 'Matriz',
+  COLTIM: 'Filial',
+}
 
-export default function Leaderboard({ vendors, maxCommission, historyByCode, prevByCode, carteiraByCode }) {
+function FactoryShareLine({ shares }) {
+  const text = Object.entries(shares || {})
+    .map(([loja, share]) => `${LOJA_LABELS[loja] || loja} ${fmtPct(share)}`)
+    .join(' · ')
+  return text ? <>{text}</> : <>Sem produção líquida</>
+}
+
+export default function Leaderboard({ vendors, historyByCode, prevByCode, carteiraByCode }) {
   const [expanded, setExpanded] = useState(null)
 
   return (
-    <div className="rounded-xl border border-border overflow-hidden bg-panel">
-      <div className={`grid ${ROW_GRID} items-center gap-3.5 px-4.5 py-2 border-b border-border text-[10px] uppercase tracking-wide text-muted`}>
-        <div />
-        <div>Vendedor</div>
-        <div className="text-center">Tendência</div>
-        <div className="text-right">Comissão paga</div>
-        <div className="text-right">Carteira pendente</div>
-        <div />
-        <div />
-      </div>
-      {vendors.map((v, i) => {
-        const history = historyByCode[v.code] || []
-        const prevVal = prevByCode ? prevByCode[v.code] ?? null : null
-        const pct = (v.commission / maxCommission) * 100
-        const isOpen = expanded === v.code
-        const carteira = carteiraByCode ? carteiraByCode[v.code] : null
-        return (
-          <div key={v.code}>
-            <div
-              onClick={() => setExpanded(isOpen ? null : v.code)}
-              className={`grid ${ROW_GRID} items-center gap-3.5 px-4.5 py-3 border-b border-border cursor-pointer hover:bg-white/[0.02] last:border-b-0`}
-            >
-              <div className={`font-display italic text-lg ${i === 0 ? 'text-accent' : 'text-muted'}`}>{i + 1}</div>
-              <div>
-                <div className="font-semibold text-sm">
-                  {v.name} <span className="text-muted font-mono text-[11px]">#{v.code}</span>
+    <div className="rounded-xl border border-border overflow-x-auto bg-panel">
+      <div className="min-w-[880px]">
+        <div className={`grid ${ROW_GRID} items-center gap-3.5 px-4.5 py-2 border-b border-border text-[10px] uppercase tracking-wide text-muted`}>
+          <div />
+          <div>Vendedor</div>
+          <div className="text-center">Tendência</div>
+          <div className="text-right">Part. prod.</div>
+          <div className="text-right">Comissão paga</div>
+          <div className="text-right">Carteira pendente</div>
+          <div />
+          <div />
+        </div>
+        {vendors.map((v, i) => {
+          const history = historyByCode[v.code] || []
+          const prevVal = prevByCode ? prevByCode[v.code] ?? null : null
+          const isOpen = expanded === v.code
+          const carteira = carteiraByCode ? carteiraByCode[v.code] : null
+          return (
+            <div key={v.code}>
+              <div
+                onClick={() => setExpanded(isOpen ? null : v.code)}
+                className={`grid ${ROW_GRID} items-center gap-3.5 px-4.5 py-3 border-b border-border cursor-pointer hover:bg-white/[0.02] last:border-b-0`}
+              >
+                <div className={`font-display italic text-lg ${i === 0 ? 'text-accent' : 'text-muted'}`}>{i + 1}</div>
+                <div>
+                  <div className="font-semibold text-sm">
+                    {v.name} <span className="text-muted font-mono text-[11px]">#{v.code}</span>
+                  </div>
+                  <div className="text-[11px] text-muted mt-0.5">
+                    {fmtBRL(v.vendas_liquidas)} · <FactoryShareLine shares={v.productionShareByLoja} />
+                  </div>
+                  <div className="h-1.5 rounded bg-white/5 overflow-hidden mt-1.5">
+                    <div className="h-full rounded bg-gradient-to-r from-accent to-teal" style={{ width: `${v.productionShare}%` }} />
+                  </div>
                 </div>
-                <div className="h-1.5 rounded bg-white/5 overflow-hidden mt-1.5">
-                  <div className="h-full rounded bg-gradient-to-r from-accent to-[#8FC6F5]" style={{ width: `${pct}%` }} />
+                <div className="flex justify-center"><Sparkline history={history} /></div>
+                <div className="font-mono font-semibold text-sm text-right text-teal">{fmtPct(v.productionShare)}</div>
+                <div className="font-mono font-semibold text-sm text-right">{fmtBRL(v.commission)}</div>
+                <div className="font-mono text-sm text-right text-muted">
+                  {carteira ? fmtBRL(carteira.comissao_potencial) : '—'}
                 </div>
+                <div><DeltaBadge current={v.commission} previous={prevVal} /></div>
+                <div className="text-center text-muted text-xs">{isOpen ? '▲' : '▼'}</div>
               </div>
-              <div className="flex justify-center"><Sparkline history={history} /></div>
-              <div className="font-mono font-semibold text-sm text-right">{fmtBRL(v.commission)}</div>
-              <div className="font-mono text-sm text-right text-muted">
-                {carteira ? fmtBRL(carteira.comissao_potencial) : '—'}
-              </div>
-              <div><DeltaBadge current={v.commission} previous={prevVal} /></div>
-              <div className="text-center text-muted text-xs">{isOpen ? '▲' : '▼'}</div>
-            </div>
-            {isOpen && (
-              <div className="bg-panel2 border-t border-dashed border-border px-4.5 py-4 text-sm text-muted grid grid-cols-1 md:grid-cols-3 gap-5">
+              {isOpen && (
+                <div className="bg-panel2 border-t border-dashed border-border px-4.5 py-4 text-sm text-muted grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
                   <div className="text-white font-semibold mb-2">Histórico de comissão</div>
                   <table className="w-full font-mono text-xs">
@@ -105,11 +121,31 @@ export default function Leaderboard({ vendors, maxCommission, historyByCode, pre
                         <td className="py-1.5 text-right text-white">{fmtBRL(v.vendas_liquidas)}</td>
                       </tr>
                       <tr className="border-b border-border">
+                        <td className="py-1.5 text-muted">Participação na produção</td>
+                        <td className="py-1.5 text-right text-teal">{fmtPct(v.productionShare)}</td>
+                      </tr>
+                      <tr className="border-b border-border">
                         <td className="py-1.5 text-muted">Vendas brutas</td>
                         <td className="py-1.5 text-right text-white">{fmtBRL(v.vendas_brutas)}</td>
                       </tr>
                     </tbody>
                   </table>
+                  {Object.keys(v.productionShareByLoja || {}).length > 0 && (
+                    <>
+                      <div className="text-white font-semibold mt-4 mb-2">Participação por fábrica</div>
+                      <table className="w-full font-mono text-xs">
+                        <tbody>
+                          {Object.entries(v.producaoPorLoja || {}).map(([loja, value]) => (
+                            <tr key={loja} className="border-b border-border">
+                              <td className="py-1.5 text-muted">{LOJA_LABELS[loja] || loja}</td>
+                              <td className="py-1.5 text-right text-white">{fmtBRL(value)}</td>
+                              <td className="py-1.5 text-right text-teal">{fmtPct(v.productionShareByLoja[loja])}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
                 </div>
                 <div>
                   <div className="text-white font-semibold mb-2">Carteira pendente (atual)</div>
@@ -130,11 +166,12 @@ export default function Leaderboard({ vendors, maxCommission, historyByCode, pre
                     <p className="text-xs">Sem carteira pendente registrada para esse vendedor.</p>
                   )}
                 </div>
-              </div>
-            )}
-          </div>
-        )
-      })}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

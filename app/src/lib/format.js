@@ -5,6 +5,13 @@ export function fmtBRL(n) {
   })
 }
 
+export function fmtPct(n, digits = 1) {
+  return `${(n || 0).toLocaleString('pt-BR', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  })}%`
+}
+
 export function parseDateBR(s) {
   if (!s) return null
   const [d, m, y] = s.split('/').map(Number)

@@ -94,12 +94,14 @@ export default function App() {
           commission: 0,
           vendas_liquidas: 0,
           vendas_brutas: 0,
+          producaoPorLoja: {},
           lojas: new Set(),
         }
       }
       map[r.codigo].commission += Number(r.comissao)
       map[r.codigo].vendas_liquidas += Number(r.vendas_liquidas)
       map[r.codigo].vendas_brutas += Number(r.vendas_brutas)
+      map[r.codigo].producaoPorLoja[r.loja] = (map[r.codigo].producaoPorLoja[r.loja] || 0) + Number(r.vendas_liquidas)
       map[r.codigo].lojas.add(r.loja)
     }
     return Object.values(map)
@@ -108,9 +110,25 @@ export default function App() {
   }
 
   const vendors = selectedPeriod ? vendorsForPeriod(selectedPeriod.id) : []
-  const maxCommission = Math.max(...vendors.map((v) => v.commission), 1)
   const totalCommission = vendors.reduce((s, v) => s + v.commission, 0)
   const totalNet = vendors.reduce((s, v) => s + v.vendas_liquidas, 0)
+  const totalNetByLoja = vendors.reduce((acc, v) => {
+    for (const [loja, value] of Object.entries(v.producaoPorLoja || {})) {
+      acc[loja] = (acc[loja] || 0) + value
+    }
+    return acc
+  }, {})
+  const vendorsWithProductionShare = vendors.map((v) => {
+    const productionShareByLoja = {}
+    for (const [loja, value] of Object.entries(v.producaoPorLoja || {})) {
+      productionShareByLoja[loja] = totalNetByLoja[loja] > 0 ? (value / totalNetByLoja[loja]) * 100 : 0
+    }
+    return {
+      ...v,
+      productionShare: totalNet > 0 ? (v.vendas_liquidas / totalNet) * 100 : 0,
+      productionShareByLoja,
+    }
+  })
   const avg = vendors.length ? totalCommission / vendors.length : 0
 
   const prevVendors = prevPeriod ? vendorsForPeriod(prevPeriod.id) : []
@@ -254,8 +272,7 @@ export default function App() {
                 <span>{sortedPeriods.length} quinzena{sortedPeriods.length > 1 ? 's' : ''} salva{sortedPeriods.length > 1 ? 's' : ''}</span>
               </div>
               <Leaderboard
-                vendors={vendors}
-                maxCommission={maxCommission}
+                vendors={vendorsWithProductionShare}
                 historyByCode={historyByCode}
                 prevByCode={prevByCode}
                 carteiraByCode={carteiraByCode}
