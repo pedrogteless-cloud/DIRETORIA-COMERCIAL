@@ -8,6 +8,8 @@ import UploadModal from './components/UploadModal'
 import ExclusionsModal from './components/ExclusionsModal'
 import CalendarModal from './components/CalendarModal'
 import LoginScreen from './components/LoginScreen'
+import TabNav from './components/TabNav'
+import PrecosTab from './components/PrecosTab'
 
 // Supabase stores dates as YYYY-MM-DD; the UI works in DD/MM/YYYY.
 function fmtDMY(isoDate) {
@@ -26,6 +28,7 @@ export default function App() {
   const [viewLoja, setViewLoja] = useState('combinado') // 'combinado' | 'COLCH' | 'COLTIM'
   const [modal, setModal] = useState(null) // 'upload' | 'exclusions' | 'calendario' | null
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('vendedores') // 'vendedores' | 'precos'
 
   async function loadAll() {
     setLoading(true)
@@ -165,70 +168,77 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-bg text-white p-7 max-w-5xl mx-auto">
-      <Header
-        periods={sortedPeriods}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        viewLoja={viewLoja}
-        onChangeViewLoja={setViewLoja}
-        onOpenUpload={() => setModal('upload')}
-        onOpenExclusions={() => setModal('exclusions')}
-        onOpenCalendario={() => setModal('calendario')}
-        onLogout={() => supabase.auth.signOut()}
-      />
+      <TabNav active={activeTab} onChange={setActiveTab} onLogout={() => supabase.auth.signOut()} />
 
-      {loading && <div className="text-muted text-sm">Carregando…</div>}
+      {activeTab === 'precos' && <PrecosTab />}
 
-      {!loading && sortedPeriods.length === 0 && (
-        <div className="text-center py-16 text-muted">
-          <p className="font-display text-xl text-white mb-2">Nenhuma quinzena salva ainda</p>
-          <p className="mb-5">Envie os PDFs do relatório L2.3.28 para começar a acompanhar.</p>
-          <button onClick={() => setModal('upload')} className="bg-accent text-[#0B1524] rounded-lg px-4 py-2 text-sm font-semibold">
-            Enviar relatórios
-          </button>
-        </div>
-      )}
-
-      {!loading && selectedPeriod && (
+      {activeTab === 'vendedores' && (
         <>
-          <Hero
-            label={periodLabel(fmtDMY(selectedPeriod.data_inicio), fmtDMY(selectedPeriod.data_fim))}
-            totalCommission={totalCommission}
-            prevTotalCommission={prevTotalCommission}
-            vendorCount={vendors.length}
-            exclusionsCount={exclusions.length}
-            totalNet={totalNet}
-            avg={avg}
-            totalCarteiraPotencial={totalCarteiraPotencial}
-            carteiraDate={carteiraDate}
+          <Header
+            periods={sortedPeriods}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            viewLoja={viewLoja}
+            onChangeViewLoja={setViewLoja}
+            onOpenUpload={() => setModal('upload')}
+            onOpenExclusions={() => setModal('exclusions')}
+            onOpenCalendario={() => setModal('calendario')}
           />
-          <div className="flex justify-between items-center text-xs uppercase tracking-wide text-muted mb-3 px-0.5">
-            <span>Ranking da quinzena</span>
-            <span>{sortedPeriods.length} quinzena{sortedPeriods.length > 1 ? 's' : ''} salva{sortedPeriods.length > 1 ? 's' : ''}</span>
-          </div>
-          <Leaderboard
-            vendors={vendors}
-            maxCommission={maxCommission}
-            historyByCode={historyByCode}
-            prevByCode={prevByCode}
-            carteiraByCode={carteiraByCode}
-          />
+
+          {loading && <div className="text-muted text-sm">Carregando…</div>}
+
+          {!loading && sortedPeriods.length === 0 && (
+            <div className="text-center py-16 text-muted">
+              <p className="font-display text-xl text-white mb-2">Nenhuma quinzena salva ainda</p>
+              <p className="mb-5">Envie os PDFs do relatório L2.3.28 para começar a acompanhar.</p>
+              <button onClick={() => setModal('upload')} className="bg-accent text-[#0B1524] rounded-lg px-4 py-2 text-sm font-semibold">
+                Enviar relatórios
+              </button>
+            </div>
+          )}
+
+          {!loading && selectedPeriod && (
+            <>
+              <Hero
+                label={periodLabel(fmtDMY(selectedPeriod.data_inicio), fmtDMY(selectedPeriod.data_fim))}
+                totalCommission={totalCommission}
+                prevTotalCommission={prevTotalCommission}
+                vendorCount={vendors.length}
+                exclusionsCount={exclusions.length}
+                totalNet={totalNet}
+                avg={avg}
+                totalCarteiraPotencial={totalCarteiraPotencial}
+                carteiraDate={carteiraDate}
+              />
+              <div className="flex justify-between items-center text-xs uppercase tracking-wide text-muted mb-3 px-0.5">
+                <span>Ranking da quinzena</span>
+                <span>{sortedPeriods.length} quinzena{sortedPeriods.length > 1 ? 's' : ''} salva{sortedPeriods.length > 1 ? 's' : ''}</span>
+              </div>
+              <Leaderboard
+                vendors={vendors}
+                maxCommission={maxCommission}
+                historyByCode={historyByCode}
+                prevByCode={prevByCode}
+                carteiraByCode={carteiraByCode}
+              />
+            </>
+          )}
+
+          {modal === 'upload' && (
+            <UploadModal
+              onClose={() => setModal(null)}
+              onDone={async () => {
+                await loadAll()
+                setModal(null)
+              }}
+            />
+          )}
+          {modal === 'exclusions' && (
+            <ExclusionsModal exclusions={exclusions} onClose={() => setModal(null)} onChanged={loadAll} />
+          )}
+          {modal === 'calendario' && <CalendarModal onClose={() => setModal(null)} />}
         </>
       )}
-
-      {modal === 'upload' && (
-        <UploadModal
-          onClose={() => setModal(null)}
-          onDone={async () => {
-            await loadAll()
-            setModal(null)
-          }}
-        />
-      )}
-      {modal === 'exclusions' && (
-        <ExclusionsModal exclusions={exclusions} onClose={() => setModal(null)} onChanged={loadAll} />
-      )}
-      {modal === 'calendario' && <CalendarModal onClose={() => setModal(null)} />}
     </div>
   )
 }

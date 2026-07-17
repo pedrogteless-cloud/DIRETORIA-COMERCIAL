@@ -13,15 +13,11 @@ export default function Header({
   onOpenUpload,
   onOpenExclusions,
   onOpenCalendario,
-  onLogout,
 }) {
   return (
     <div className="flex justify-between items-end flex-wrap gap-4 mb-6 border-b border-border pb-5">
       <div>
-        <div className="text-[11px] tracking-widest uppercase text-accent font-semibold mb-1.5">
-          Grupo Ley · Colchões
-        </div>
-        <h1 className="font-display text-3xl font-semibold m-0">Diretoria Comercial</h1>
+        <h1 className="font-display text-3xl font-semibold m-0">Gestão de Vendedores</h1>
       </div>
       <div className="flex gap-2.5 items-center flex-wrap">
         <div className="flex border border-border rounded-lg overflow-hidden">
@@ -72,13 +68,6 @@ export default function Header({
           className="bg-accent text-[#0B1524] rounded-lg px-4 py-2 text-sm font-semibold hover:brightness-110"
         >
           + Novos relatórios
-        </button>
-        <button
-          onClick={onLogout}
-          className="text-muted hover:text-coral text-sm px-2"
-          title="Sair"
-        >
-          Sair
         </button>
       </div>
     </div>
