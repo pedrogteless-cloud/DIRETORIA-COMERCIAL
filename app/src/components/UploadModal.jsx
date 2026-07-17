@@ -74,6 +74,14 @@ async function saveCarteira(result) {
 
 export default function UploadModal({ onClose, onDone }) {
   const [files, setFiles] = useState([]) // { name, status, message }
+  const [dragging, setDragging] = useState(false)
+
+  function handleDrop(e) {
+    e.preventDefault()
+    setDragging(false)
+    const pdfs = Array.from(e.dataTransfer.files).filter((f) => f.type === 'application/pdf')
+    if (pdfs.length) handleFiles(pdfs)
+  }
 
   async function handleFiles(fileList) {
     const list = Array.from(fileList)
@@ -118,7 +126,14 @@ export default function UploadModal({ onClose, onDone }) {
           pendente de faturar.
         </p>
 
-        <label className="block border border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:bg-white/[0.02]">
+        <label
+          onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+          className={`block border border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+            dragging ? 'border-accent bg-accent/10' : 'border-border hover:bg-white/[0.02]'
+          }`}
+        >
           <input
             type="file"
             accept="application/pdf"
@@ -126,7 +141,9 @@ export default function UploadModal({ onClose, onDone }) {
             className="hidden"
             onChange={(e) => handleFiles(e.target.files)}
           />
-          <span className="text-sm text-muted">Clique para escolher um ou mais PDFs</span>
+          <span className="text-sm text-muted">
+            {dragging ? 'Solte os PDFs aqui' : 'Clique ou arraste um ou mais PDFs aqui'}
+          </span>
         </label>
 
         {files.length > 0 && (
