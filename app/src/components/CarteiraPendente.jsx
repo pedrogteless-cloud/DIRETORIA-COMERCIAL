@@ -1,4 +1,4 @@
-import { fmtBRL } from '../lib/format'
+import { fmtBRL, fmtPct } from '../lib/format'
 
 function fmtDateShort(iso) {
   if (!iso) return '—'
@@ -13,6 +13,12 @@ export default function CarteiraPendente({ rows, dateColch, dateColtim }) {
   const totalColch = rows.reduce((s, r) => s + r.colch, 0)
   const totalColtim = rows.reduce((s, r) => s + r.coltim, 0)
   const totalGeral = totalColch + totalColtim
+  const rowsWithShare = rows.map((r) => ({
+    ...r,
+    pctColch: totalColch > 0 ? (r.colch / totalColch) * 100 : 0,
+    pctColtim: totalColtim > 0 ? (r.coltim / totalColtim) * 100 : 0,
+    pctTotal: totalGeral > 0 ? (r.total / totalGeral) * 100 : 0,
+  }))
 
   return (
     <div>
@@ -34,31 +40,54 @@ export default function CarteiraPendente({ rows, dateColch, dateColtim }) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-border overflow-hidden bg-panel">
-        <div className="grid grid-cols-[1fr_130px_130px_130px] items-center gap-3.5 px-4.5 py-2 border-b border-border text-[10px] uppercase tracking-wide text-muted">
+      <div className="rounded-xl border border-border overflow-x-auto bg-panel">
+        <div className="min-w-[760px]">
+        <div className="grid grid-cols-[1fr_150px_150px_150px] items-center gap-3.5 px-4.5 py-2 border-b border-border text-[10px] uppercase tracking-wide text-muted">
           <div>Representante</div>
-          <div className="text-right">Eusébio (matriz)</div>
-          <div className="text-right">Timon (filial)</div>
-          <div className="text-right">Total a entregar</div>
+          <div className="text-right">Eusébio</div>
+          <div className="text-right">Timon</div>
+          <div className="text-right">Total</div>
         </div>
 
         {rows.length === 0 && (
           <div className="px-4.5 py-6 text-center text-muted text-sm">Nenhuma carteira pendente registrada ainda.</div>
         )}
 
-        {rows.map((r) => (
+        {rowsWithShare.map((r) => (
           <div
             key={r.codigo}
-            className="grid grid-cols-[1fr_130px_130px_130px] items-center gap-3.5 px-4.5 py-3 border-b border-border last:border-b-0 hover:bg-white/[0.02]"
+            className="grid grid-cols-[1fr_150px_150px_150px] items-center gap-3.5 px-4.5 py-3 border-b border-border last:border-b-0 hover:bg-white/[0.02]"
           >
             <div className="text-sm font-semibold">
               {r.nome} <span className="text-muted font-mono text-[11px]">#{r.codigo}</span>
             </div>
-            <div className="text-right font-mono text-sm text-muted">{r.colch ? fmtBRL(r.colch) : '—'}</div>
-            <div className="text-right font-mono text-sm text-muted">{r.coltim ? fmtBRL(r.coltim) : '—'}</div>
-            <div className="text-right font-mono text-sm font-semibold text-accent">{fmtBRL(r.total)}</div>
+            <div className="text-right font-mono text-sm">
+              {r.colch ? (
+                <>
+                  <div className="text-white">{fmtBRL(r.colch)}</div>
+                  <div className="text-teal text-xs">{fmtPct(r.pctColch)} da matriz</div>
+                </>
+              ) : (
+                <span className="text-muted">—</span>
+              )}
+            </div>
+            <div className="text-right font-mono text-sm">
+              {r.coltim ? (
+                <>
+                  <div className="text-white">{fmtBRL(r.coltim)}</div>
+                  <div className="text-teal text-xs">{fmtPct(r.pctColtim)} da filial</div>
+                </>
+              ) : (
+                <span className="text-muted">—</span>
+              )}
+            </div>
+            <div className="text-right font-mono text-sm font-semibold">
+              <div className="text-accent">{fmtBRL(r.total)}</div>
+              <div className="text-teal text-xs">{fmtPct(r.pctTotal)} do total</div>
+            </div>
           </div>
         ))}
+        </div>
       </div>
     </div>
   )
