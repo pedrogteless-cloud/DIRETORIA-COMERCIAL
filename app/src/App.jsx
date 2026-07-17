@@ -10,6 +10,7 @@ import CalendarModal from './components/CalendarModal'
 import LoginScreen from './components/LoginScreen'
 import TabNav from './components/TabNav'
 import PrecosTab from './components/PrecosTab'
+import CarteiraPendente from './components/CarteiraPendente'
 
 // Supabase stores dates as YYYY-MM-DD; the UI works in DD/MM/YYYY.
 function fmtDMY(isoDate) {
@@ -159,6 +160,24 @@ export default function App() {
     return { carteiraByCode: map, carteiraDate: latestDate, totalCarteiraPotencial: total }
   }, [carteiraVendedor, latestSnapshotByLoja, viewLoja])
 
+  // O que cada representante ainda tem pra entregar, por fábrica — sempre
+  // mostra as duas (Eusébio/COLCH e Timon/COLTIM) lado a lado, independente
+  // do filtro de loja usado no ranking de comissão.
+  const carteiraPorRepresentante = useMemo(() => {
+    const map = {}
+    for (const [loja, snap] of Object.entries(latestSnapshotByLoja)) {
+      const rows = carteiraVendedor.filter((cv) => cv.snapshot_id === snap.id)
+      for (const r of rows) {
+        if (isExcluded(r.nome)) continue
+        if (!map[r.codigo]) map[r.codigo] = { codigo: r.codigo, nome: r.nome, colch: 0, coltim: 0 }
+        map[r.codigo][loja === 'COLCH' ? 'colch' : 'coltim'] += Number(r.valor_pendente)
+      }
+    }
+    return Object.values(map)
+      .map((r) => ({ ...r, total: r.colch + r.coltim }))
+      .sort((a, b) => b.total - a.total)
+  }, [carteiraVendedor, latestSnapshotByLoja, exclusionPatterns])
+
   if (session === undefined) {
     return <div className="min-h-screen bg-bg" />
   }
@@ -220,6 +239,20 @@ export default function App() {
                 historyByCode={historyByCode}
                 prevByCode={prevByCode}
                 carteiraByCode={carteiraByCode}
+              />
+            </>
+          )}
+
+          {!loading && (
+            <>
+              <div className="flex justify-between items-center text-xs uppercase tracking-wide text-muted mb-3 mt-8 px-0.5">
+                <span>Carteira pendente por representante</span>
+                <span>o que falta entregar, por fábrica</span>
+              </div>
+              <CarteiraPendente
+                rows={carteiraPorRepresentante}
+                dateColch={latestSnapshotByLoja.COLCH?.data_relatorio}
+                dateColtim={latestSnapshotByLoja.COLTIM?.data_relatorio}
               />
             </>
           )}
