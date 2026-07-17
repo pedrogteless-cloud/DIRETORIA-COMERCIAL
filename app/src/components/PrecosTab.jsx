@@ -82,7 +82,14 @@ export default function PrecosTab() {
           const hasBaseBox = group.items.some((i) => i.base_box != null)
           return (
             <div key={group.produto} className="rounded-xl border border-border overflow-hidden bg-panel">
-              <div className="px-4.5 py-2.5 border-b border-border font-semibold text-sm bg-panel2">{group.produto}</div>
+              <div className="px-4.5 py-2.5 border-b border-border bg-panel2 flex items-center justify-between gap-3 flex-wrap">
+                <span className="font-semibold text-sm">{group.produto}</span>
+                {group.items[0]?.cores ? (
+                  <span className="text-muted text-xs">{group.items[0].cores}</span>
+                ) : (
+                  <span className="text-muted text-xs italic">cores não cadastradas</span>
+                )}
+              </div>
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-[10px] uppercase tracking-wide text-muted border-b border-border">

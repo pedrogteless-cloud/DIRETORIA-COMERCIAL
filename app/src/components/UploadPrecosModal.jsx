@@ -36,13 +36,22 @@ export default function UploadPrecosModal({ onClose, onDone }) {
   async function confirmReplace() {
     setStatus('saving')
     try {
+      // Cores não vêm do PDF de preços — vêm do catálogo, guardadas à parte
+      // em produtos_cores (essa tabela não é apagada no replace mensal).
+      const { data: coresData } = await supabase.from('produtos_cores').select('*')
+      const coresPorProduto = Object.fromEntries((coresData || []).map((c) => [c.produto, c.cores]))
+
       const { error: delErr } = await supabase
         .from('tabela_precos')
         .delete()
         .neq('id', '00000000-0000-0000-0000-000000000000')
       if (delErr) throw delErr
 
-      const rows = preview.items.map((item) => ({ ...item, validade: preview.validade }))
+      const rows = preview.items.map((item) => ({
+        ...item,
+        validade: preview.validade,
+        cores: coresPorProduto[item.produto] ?? null,
+      }))
       const { error: insErr } = await supabase.from('tabela_precos').insert(rows)
       if (insErr) throw insErr
 
