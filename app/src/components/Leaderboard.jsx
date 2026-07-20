@@ -52,7 +52,7 @@ export default function Leaderboard({ vendors, historyByCode, prevByCode, cartei
   return (
     <div className="rounded-xl border border-border overflow-x-auto bg-panel">
       <div className="min-w-[880px]">
-        <div className={`grid ${ROW_GRID} items-center gap-3.5 px-4.5 py-2 border-b border-border text-[10px] uppercase tracking-wide text-muted`}>
+        <div className={`grid ${ROW_GRID} items-center gap-4 px-5 py-3 border-b border-border text-[10px] uppercase tracking-wide text-muted`}>
           <div />
           <div>Vendedor</div>
           <div className="text-center">Tendência</div>
@@ -71,7 +71,7 @@ export default function Leaderboard({ vendors, historyByCode, prevByCode, cartei
             <div key={v.code}>
               <div
                 onClick={() => setExpanded(isOpen ? null : v.code)}
-                className={`grid ${ROW_GRID} items-center gap-3.5 px-4.5 py-3 border-b border-border cursor-pointer hover:bg-white/[0.02] last:border-b-0`}
+                className={`grid ${ROW_GRID} items-center gap-4 px-5 py-4 border-b border-border cursor-pointer hover:bg-white/[0.02] last:border-b-0`}
               >
                 <div className={`font-display italic text-lg ${i === 0 ? 'text-accent' : 'text-muted'}`}>{i + 1}</div>
                 <div>
@@ -95,7 +95,7 @@ export default function Leaderboard({ vendors, historyByCode, prevByCode, cartei
                 <div className="text-center text-muted text-xs">{isOpen ? '▲' : '▼'}</div>
               </div>
               {isOpen && (
-                <div className="bg-panel2 border-t border-dashed border-border px-4.5 py-4 text-sm text-muted grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="bg-panel2 border-t border-dashed border-border px-5 py-5 text-sm text-muted grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <div className="text-white font-semibold mb-2">Histórico de comissão</div>
                   <table className="w-full font-mono text-xs">

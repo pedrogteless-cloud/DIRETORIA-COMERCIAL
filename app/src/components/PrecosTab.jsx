@@ -95,51 +95,53 @@ export default function PrecosTab() {
           const hasPillow = group.items.some((i) => i.pillow != null)
           const hasBaseBox = group.items.some((i) => i.base_box != null)
           return (
-            <div key={group.produto} className="rounded-xl border border-border overflow-hidden bg-panel">
-              <div className="px-4.5 py-2.5 border-b border-border bg-panel2 flex items-center justify-between gap-3 flex-wrap">
-                <span className="font-semibold text-sm">
-                  {group.produto} <span className="text-muted font-normal text-xs">· {countSkus(group.items)} SKUs</span>
-                </span>
-                {group.items[0]?.cores ? (
-                  <span className="text-muted text-xs">{group.items[0].cores}</span>
-                ) : (
-                  <span className="text-muted text-xs italic">cores não cadastradas</span>
-                )}
-              </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-[10px] uppercase tracking-wide text-muted border-b border-border">
-                    <th className="text-left font-medium px-4.5 py-2">Tamanho</th>
-                    {hasPillow && <th className="text-right font-medium px-4.5 py-2">Pillow</th>}
-                    <th className="text-right font-medium px-4.5 py-2">Colchão</th>
-                    {hasBaseBox && <th className="text-right font-medium px-4.5 py-2">Base Box</th>}
-                    <th className="text-right font-medium px-4.5 py-2">Conjunto</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {group.items.map((item) => (
-                    <tr key={item.id} className="border-b border-border last:border-b-0">
-                      <td className="px-4.5 py-2 font-mono text-xs">{item.tamanho}</td>
-                      {hasPillow && (
-                        <td className="text-right px-4.5 py-2 font-mono">{item.pillow != null ? fmtBRL(item.pillow) : '—'}</td>
-                      )}
-                      <td className="text-right px-4.5 py-2 font-mono">
-                        {fmtBRL(item.colchao)}
-                        {item.colchao_altura && <span className="text-muted text-[10px] ml-1">({item.colchao_altura})</span>}
-                      </td>
-                      {hasBaseBox && (
-                        <td className="text-right px-4.5 py-2 font-mono">
-                          {item.base_box != null ? fmtBRL(item.base_box) : '—'}
-                        </td>
-                      )}
-                      <td className="text-right px-4.5 py-2 font-mono">
-                        {fmtBRL(item.conjunto)}
-                        {item.conjunto_altura && <span className="text-muted text-[10px] ml-1">({item.conjunto_altura})</span>}
-                      </td>
+            <div key={group.produto} className="rounded-xl border border-border overflow-x-auto bg-panel">
+              <div className="min-w-[680px]">
+                <div className="px-5 py-3 border-b border-border bg-panel2 flex items-center justify-between gap-4 flex-wrap">
+                  <span className="font-semibold text-sm">
+                    {group.produto} <span className="text-muted font-normal text-xs">· {countSkus(group.items)} SKUs</span>
+                  </span>
+                  {group.items[0]?.cores ? (
+                    <span className="text-muted text-xs">{group.items[0].cores}</span>
+                  ) : (
+                    <span className="text-muted text-xs italic">cores não cadastradas</span>
+                  )}
+                </div>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-[10px] uppercase tracking-wide text-muted border-b border-border">
+                      <th className="text-left font-medium px-5 py-3">Tamanho</th>
+                      {hasPillow && <th className="text-right font-medium px-5 py-3">Pillow</th>}
+                      <th className="text-right font-medium px-5 py-3">Colchão</th>
+                      {hasBaseBox && <th className="text-right font-medium px-5 py-3">Base Box</th>}
+                      <th className="text-right font-medium px-5 py-3">Conjunto</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {group.items.map((item) => (
+                      <tr key={item.id} className="border-b border-border last:border-b-0">
+                        <td className="px-5 py-3 font-mono text-xs">{item.tamanho}</td>
+                        {hasPillow && (
+                          <td className="text-right px-5 py-3 font-mono">{item.pillow != null ? fmtBRL(item.pillow) : '—'}</td>
+                        )}
+                        <td className="text-right px-5 py-3 font-mono">
+                          {fmtBRL(item.colchao)}
+                          {item.colchao_altura && <span className="text-muted text-[10px] ml-1">({item.colchao_altura})</span>}
+                        </td>
+                        {hasBaseBox && (
+                          <td className="text-right px-5 py-3 font-mono">
+                            {item.base_box != null ? fmtBRL(item.base_box) : '—'}
+                          </td>
+                        )}
+                        <td className="text-right px-5 py-3 font-mono">
+                          {fmtBRL(item.conjunto)}
+                          {item.conjunto_altura && <span className="text-muted text-[10px] ml-1">({item.conjunto_altura})</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )
         })}

@@ -28,30 +28,30 @@ export default function Hero({
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 mb-7">
-      <div className="rounded-xl p-5 border border-accent/25 bg-gradient-to-br from-panel2 to-panel lg:col-span-1">
+      <div className="rounded-xl p-6 border border-accent/25 bg-gradient-to-br from-panel2 to-panel lg:col-span-1">
         <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Total pago em comissão</div>
         <div className="font-display text-3xl font-semibold text-accent">{fmtBRL(totalCommission)}</div>
         <div className="text-xs text-muted mt-1.5">
           {label} <DeltaBadge current={totalCommission} previous={prevTotalCommission} />
         </div>
       </div>
-      <div className="rounded-xl p-5 border border-border bg-panel">
+      <div className="rounded-xl p-6 border border-border bg-panel">
         <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Carteira pendente</div>
         <div className="font-display text-[22px] font-semibold">{fmtBRL(totalCarteiraPotencial)}</div>
         <div className="text-xs text-muted mt-1.5">
           comissão potencial · carteira de {fmtDateShort(carteiraDate)}
         </div>
       </div>
-      <div className="rounded-xl p-5 border border-border bg-panel">
+      <div className="rounded-xl p-6 border border-border bg-panel">
         <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Vendedores no ranking</div>
         <div className="font-display text-[22px] font-semibold">{vendorCount}</div>
         <div className="text-xs text-muted mt-1.5">excluídos: {exclusionsCount}</div>
       </div>
-      <div className="rounded-xl p-5 border border-border bg-panel">
+      <div className="rounded-xl p-6 border border-border bg-panel">
         <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Vendido líquido</div>
         <div className="font-display text-[22px] font-semibold">{fmtBRL(totalNet)}</div>
       </div>
-      <div className="rounded-xl p-5 border border-border bg-panel">
+      <div className="rounded-xl p-6 border border-border bg-panel">
         <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Comissão média</div>
         <div className="font-display text-[22px] font-semibold">{fmtBRL(avg)}</div>
       </div>
