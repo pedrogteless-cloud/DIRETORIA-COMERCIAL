@@ -62,39 +62,41 @@ export default function PromocaoBanner() {
           {groups.map((group) => {
             const hasBaseBox = group.items.some((i) => i.base_box != null)
             return (
-              <div key={group.produto} className="rounded-lg border border-border bg-panel/60 overflow-hidden">
-                <div className="px-4 py-2.5 border-b border-border bg-panel2 flex items-center justify-between gap-2">
-                  <span className="font-semibold text-sm">{group.produto}</span>
-                  {group.items[0]?.cores && <span className="text-muted text-[11px]">{group.items[0].cores}</span>}
-                </div>
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="text-[9px] uppercase tracking-wide text-muted border-b border-border">
-                      <th className="text-left font-medium px-4 py-2">Tamanho</th>
-                      <th className="text-right font-medium px-4 py-2">Colchão</th>
-                      {hasBaseBox && <th className="text-right font-medium px-4 py-2">Base Box</th>}
-                      <th className="text-right font-medium px-4 py-2">Conjunto</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {group.items.map((item) => (
-                      <tr key={item.id} className="border-b border-border last:border-b-0">
-                        <td className="px-4 py-2 font-mono">{item.tamanho}</td>
-                        <td className="text-right px-4 py-2 font-mono text-amber-300">
-                          {item.colchao != null ? fmtBRL(item.colchao) : '—'}
-                        </td>
-                        {hasBaseBox && (
-                          <td className="text-right px-4 py-2 font-mono text-amber-300">
-                            {item.base_box != null ? fmtBRL(item.base_box) : '—'}
-                          </td>
-                        )}
-                        <td className="text-right px-4 py-2 font-mono text-amber-300">
-                          {item.conjunto != null ? fmtBRL(item.conjunto) : '—'}
-                        </td>
+              <div key={group.produto} className="rounded-lg border border-border bg-panel/60 overflow-x-auto">
+                <div className="min-w-[420px]">
+                  <div className="px-4 py-2.5 border-b border-border bg-panel2 flex items-center justify-between gap-2">
+                    <span className="font-semibold text-sm">{group.produto}</span>
+                    {group.items[0]?.cores && <span className="text-muted text-[11px]">{group.items[0].cores}</span>}
+                  </div>
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-[9px] uppercase tracking-wide text-muted border-b border-border">
+                        <th className="text-left font-medium px-4 py-2">Tamanho</th>
+                        <th className="text-right font-medium px-4 py-2">Colchão</th>
+                        {hasBaseBox && <th className="text-right font-medium px-4 py-2">Base Box</th>}
+                        <th className="text-right font-medium px-4 py-2">Conjunto</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {group.items.map((item) => (
+                        <tr key={item.id} className="border-b border-border last:border-b-0">
+                          <td className="px-4 py-2 font-mono">{item.tamanho}</td>
+                          <td className="text-right px-4 py-2 font-mono text-amber-300">
+                            {item.colchao != null ? fmtBRL(item.colchao) : '—'}
+                          </td>
+                          {hasBaseBox && (
+                            <td className="text-right px-4 py-2 font-mono text-amber-300">
+                              {item.base_box != null ? fmtBRL(item.base_box) : '—'}
+                            </td>
+                          )}
+                          <td className="text-right px-4 py-2 font-mono text-amber-300">
+                            {item.conjunto != null ? fmtBRL(item.conjunto) : '—'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )
           })}
