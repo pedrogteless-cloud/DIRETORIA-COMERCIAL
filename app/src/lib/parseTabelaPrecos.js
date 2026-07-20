@@ -7,19 +7,25 @@
 //
 // The number of "R$ ..." amounts on a row tells us which price columns
 // are present, since not every product line sells a standalone pillow:
+//   1 valor  -> [preço único (ex: Unibox)] vira colchão = conjunto
 //   2 valores -> [preço único (colchão ou unibox), conjunto]
 //   3 valores -> [colchão, base box, conjunto]
 //   4 valores -> [pillow avulso, colchão, base box, conjunto]  (ex: Elegance)
 //
 // Header lines ("PRODUTO TAMANHO PILLOW COLCHÃO (30CM) ...") precede each
-// block of rows and carry the altura (cm) de cada componente — vamos
-// guardando a última header vista pra anotar as linhas seguintes.
+// block de rows e carregam a altura (cm) de cada componente — guardamos a
+// última header vista pra anotar as linhas seguintes. Nem toda tabela tem
+// coluna de pillow (ex: linhas "PRODUTO TAMANHO ... UNIBOX (60CM)"), então
+// o header só exige "PRODUTO" + "TAMANHO" no começo.
+//
+// Algumas tabelas trazem uma "VÁLIDO ATÉ dd/mm/aaaa" no rodapé; outras não
+// (ex: julho/2026) — quando ausente, seguimos sem data de validade.
 
 function parseNum(s) {
   return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0
 }
 
-const HEADER_RE = /^PRODUTO\s+TAMANHO\s+PILLOW/
+const HEADER_RE = /^PRODUTO\s+TAMANHO\b/
 const ROW_RE = /^(.+?)\s+(\d{3}X\d{3})\s+((?:R\$\s*[\d.,]+\s*)+)$/
 const AMOUNT_RE = /R\$\s*([\d.,]+)/g
 const CM_RE = /\((\d+(?:\/\d+)?CM)\)/g
@@ -27,11 +33,11 @@ const PILLOW_ALTURA_RE = /PILLOW\s*\(\d+CM\)/
 
 export function parseTabelaPrecosText(text) {
   const validadeMatch = text.match(/V[ÁA]LIDO AT[ÉE]\s*(\d{2}\/\d{2}\/\d{4})/i)
-  if (!validadeMatch) {
-    return { error: 'Não encontrei "VÁLIDO ATÉ dd/mm/aaaa" no PDF — confira se é a tabela de representantes certa.' }
+  let validade = null
+  if (validadeMatch) {
+    const [d, m, y] = validadeMatch[1].split('/')
+    validade = `${y}-${m}-${d}`
   }
-  const [d, m, y] = validadeMatch[1].split('/')
-  const validade = `${y}-${m}-${d}`
 
   let colchaoAltura = null
   let baseBoxAltura = null
@@ -67,9 +73,17 @@ export function parseTabelaPrecosText(text) {
       ;[colchao, base_box, conjunto] = amounts
     } else if (amounts.length === 2) {
       ;[colchao, conjunto] = amounts
+    } else if (amounts.length === 1) {
+      ;[colchao] = amounts
+      conjunto = colchao
     } else {
       continue
     }
+
+    // Algumas tabelas repetem o mesmo produto+tamanho em blocos duplicados
+    // no fim do PDF (erro de formatação da planilha de origem) — fica só
+    // a primeira ocorrência.
+    if (items.some((i) => i.produto === produto && i.tamanho === tamanho)) continue
 
     items.push({
       produto,

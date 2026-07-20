@@ -97,10 +97,12 @@ export default function UploadPrecosModal({ onClose, onDone }) {
 
         {status === 'preview' && preview && (
           <div className="border border-border rounded-lg p-4 text-sm">
-            <div className="mb-2">
-              <span className="text-muted">Válido até:</span>{' '}
-              {preview.validade.split('-').reverse().join('/')}
-            </div>
+            {preview.validade && (
+              <div className="mb-2">
+                <span className="text-muted">Válido até:</span>{' '}
+                {preview.validade.split('-').reverse().join('/')}
+              </div>
+            )}
             <div className="mb-3">
               <span className="text-muted">{produtos.length} produtos</span> · {preview.items.length} linhas de preço
             </div>
