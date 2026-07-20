@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { fmtBRL } from '../lib/format'
 import UploadPrecosModal from './UploadPrecosModal'
+import PromocaoBanner from './PromocaoBanner'
 
 function fmtDateShort(iso) {
   if (!iso) return ''
@@ -77,6 +78,8 @@ export default function PrecosTab() {
           </button>
         </div>
       </div>
+
+      <PromocaoBanner />
 
       {loading && <div className="text-muted text-sm">Carregando…</div>}
 
