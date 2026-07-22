@@ -11,6 +11,7 @@ import LoginScreen from './components/LoginScreen'
 import TabNav from './components/TabNav'
 import PrecosTab from './components/PrecosTab'
 import CarteiraPendente from './components/CarteiraPendente'
+import PortalAdminTab from './components/PortalAdminTab'
 
 // Supabase stores dates as YYYY-MM-DD; the UI works in DD/MM/YYYY.
 function fmtDMY(isoDate) {
@@ -209,6 +210,8 @@ export default function App() {
       <TabNav active={activeTab} onChange={setActiveTab} onLogout={() => supabase.auth.signOut()} />
 
       {activeTab === 'precos' && <PrecosTab />}
+
+      {activeTab === 'portal' && <PortalAdminTab />}
 
       {activeTab === 'vendedores' && (
         <>
