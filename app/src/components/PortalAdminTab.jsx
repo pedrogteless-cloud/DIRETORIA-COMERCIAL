@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import RepresentantesAdmin from './RepresentantesAdmin'
 import MateriaisAdmin from './MateriaisAdmin'
+import ConfiguracoesAdmin from './ConfiguracoesAdmin'
 
 export default function PortalAdminTab() {
-  const [section, setSection] = useState('representantes') // 'representantes' | 'materiais'
+  const [section, setSection] = useState('representantes') // 'representantes' | 'materiais' | 'config'
 
   return (
     <div>
@@ -33,10 +34,19 @@ export default function PortalAdminTab() {
         >
           Materiais
         </button>
+        <button
+          onClick={() => setSection('config')}
+          className={`px-4 py-2 text-sm font-medium ${
+            section === 'config' ? 'bg-accent text-[#0B1524]' : 'text-muted hover:bg-white/5'
+          }`}
+        >
+          Configurações
+        </button>
       </div>
 
       {section === 'representantes' && <RepresentantesAdmin />}
       {section === 'materiais' && <MateriaisAdmin />}
+      {section === 'config' && <ConfiguracoesAdmin />}
     </div>
   )
 }

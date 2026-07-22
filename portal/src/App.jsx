@@ -4,8 +4,10 @@ import PinLogin from './components/PinLogin'
 import MateriaisView from './components/MateriaisView'
 import PrecosView from './components/PrecosView'
 import PromocaoView from './components/PromocaoView'
+import PedidoView from './components/PedidoView'
 
 const TABS = [
+  { value: 'pedido', label: 'Pedido', icon: '📝' },
   { value: 'materiais', label: 'Materiais', icon: '📷' },
   { value: 'precos', label: 'Tabela', icon: '🏷️' },
   { value: 'promocao', label: 'Promoção', icon: '🎁' },
@@ -13,7 +15,7 @@ const TABS = [
 
 export default function App() {
   const [rep, setRep] = useState(undefined) // undefined = checando, null = deslogado
-  const [tab, setTab] = useState('materiais')
+  const [tab, setTab] = useState('pedido')
 
   // Revalida o PIN salvo a cada abertura — se o diretor desativou o acesso,
   // o rep cai pra tela de PIN mesmo tendo o PIN guardado no celular.
@@ -54,13 +56,14 @@ export default function App() {
           </button>
         </div>
 
+        {tab === 'pedido' && <PedidoView representante={rep} />}
         {tab === 'materiais' && <MateriaisView />}
         {tab === 'precos' && <PrecosView />}
         {tab === 'promocao' && <PromocaoView />}
       </div>
 
       <nav className="fixed bottom-0 inset-x-0 bg-panel border-t border-border">
-        <div className="max-w-2xl mx-auto grid grid-cols-3">
+        <div className="max-w-2xl mx-auto grid grid-cols-4">
           {TABS.map((t) => (
             <button
               key={t.value}
