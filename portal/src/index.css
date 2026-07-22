@@ -5,3 +5,14 @@
 body {
   font-family: 'Inter', sans-serif;
 }
+
+/* Campos com no mínimo 16px no celular pra o iOS não dar zoom ao focar —
+   incômodo clássico em formulário no iPhone (ex: preencher o pedido). */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+

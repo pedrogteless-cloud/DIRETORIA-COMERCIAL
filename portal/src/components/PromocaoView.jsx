@@ -1,44 +1,42 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { fmtBRL } from '../lib/format'
+import { agruparPorProduto } from '../lib/agrupar'
+import { Spinner, EmptyState } from './ui'
 
 export default function PromocaoView() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let vivo = true
     supabase
       .from('tabela_promocional')
       .select('*')
       .order('produto')
       .order('tamanho')
       .then(({ data }) => {
+        if (!vivo) return
         setItems(data || [])
         setLoading(false)
       })
+    return () => {
+      vivo = false
+    }
   }, [])
 
-  const { campanha, groups } = useMemo(() => {
-    const gs = []
-    for (const item of items) {
-      let g = gs.find((x) => x.produto === item.produto)
-      if (!g) {
-        g = { produto: item.produto, items: [] }
-        gs.push(g)
-      }
-      g.items.push(item)
-    }
-    return { campanha: items[0]?.campanha, groups: gs }
-  }, [items])
+  const { campanha, groups } = useMemo(
+    () => ({ campanha: items[0]?.campanha, groups: agruparPorProduto(items) }),
+    [items]
+  )
 
-  if (loading) return <div className="text-muted text-sm">Carregando…</div>
+  if (loading) return <Spinner />
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-16 text-muted">
-        <p className="font-display text-lg text-white mb-2">Nenhuma promoção ativa</p>
-        <p className="text-sm">Quando tiver campanha rolando, os preços promocionais aparecem aqui.</p>
-      </div>
+      <EmptyState titulo="Nenhuma promoção ativa">
+        Quando tiver campanha rolando, os preços promocionais aparecem aqui.
+      </EmptyState>
     )
   }
 
@@ -53,13 +51,13 @@ export default function PromocaoView() {
         {groups.map((group) => {
           const hasBaseBox = group.items.some((i) => i.base_box != null)
           return (
-            <div key={group.produto} className="rounded-xl border border-border bg-panel overflow-x-auto">
-              <div className="min-w-[440px]">
-                <div className="px-4 py-3 border-b border-border bg-panel2 flex items-center justify-between gap-3 flex-wrap">
-                  <span className="font-semibold text-sm">{group.produto}</span>
-                  {group.items[0]?.cores && <span className="text-muted text-xs">{group.items[0].cores}</span>}
-                </div>
-                <table className="w-full text-sm">
+            <div key={group.produto} className="rounded-xl border border-border bg-panel overflow-hidden">
+              <div className="px-4 py-3 border-b border-border bg-panel2 flex items-center justify-between gap-3 flex-wrap">
+                <span className="font-semibold text-sm">{group.produto}</span>
+                {group.items[0]?.cores && <span className="text-muted text-xs">{group.items[0].cores}</span>}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm min-w-[420px]">
                   <thead>
                     <tr className="text-[10px] uppercase tracking-wide text-muted border-b border-border">
                       <th className="text-left font-medium px-4 py-2.5">Tamanho</th>

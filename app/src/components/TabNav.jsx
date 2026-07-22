@@ -1,6 +1,5 @@
 const TABS = [
   { value: 'vendedores', label: 'Gestão de Vendedores' },
-  { value: 'precos', label: 'Tabela de Preços' },
   { value: 'portal', label: 'Portal do Representante' },
 ]
 

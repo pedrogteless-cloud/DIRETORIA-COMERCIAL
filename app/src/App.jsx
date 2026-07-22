@@ -9,7 +9,6 @@ import ExclusionsModal from './components/ExclusionsModal'
 import CalendarModal from './components/CalendarModal'
 import LoginScreen from './components/LoginScreen'
 import TabNav from './components/TabNav'
-import PrecosTab from './components/PrecosTab'
 import CarteiraPendente from './components/CarteiraPendente'
 import PortalAdminTab from './components/PortalAdminTab'
 
@@ -30,7 +29,7 @@ export default function App() {
   const [viewLoja, setViewLoja] = useState('combinado') // 'combinado' | 'COLCH' | 'COLTIM'
   const [modal, setModal] = useState(null) // 'upload' | 'exclusions' | 'calendario' | null
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('vendedores') // 'vendedores' | 'precos'
+  const [activeTab, setActiveTab] = useState('vendedores') // 'vendedores' | 'portal'
   const [subTab, setSubTab] = useState('comissao') // 'comissao' | 'carteira' (dentro de Gestão de Vendedores)
 
   async function loadAll() {
@@ -208,8 +207,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-bg text-white p-7 max-w-5xl mx-auto">
       <TabNav active={activeTab} onChange={setActiveTab} onLogout={() => supabase.auth.signOut()} />
-
-      {activeTab === 'precos' && <PrecosTab />}
 
       {activeTab === 'portal' && <PortalAdminTab />}
 

@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { fmtBRL } from '../lib/format'
 import SignaturePad from './SignaturePad'
-import { gerarPedidoPdf } from '../lib/gerarPedidoPdf'
 import { enviarPedidoWhatsApp } from '../lib/enviarPedido'
 
 const CAB_INICIAL = {
@@ -125,7 +124,10 @@ export default function PedidoView({ representante }) {
     setBusca('')
   }
 
-  function montarPdf() {
+  // Carrega o gerador de PDF (jsPDF) sob demanda — assim as libs pesadas de
+  // PDF ficam fora do bundle inicial e o portal abre rápido no celular.
+  async function montarPdf() {
+    const { gerarPedidoPdf } = await import('../lib/gerarPedidoPdf')
     return gerarPedidoPdf({
       cabecalho: cab,
       itens,
@@ -142,15 +144,21 @@ export default function PedidoView({ representante }) {
     return `pedido_${cliente}_${data}.pdf`
   }
 
-  function baixarPdf() {
-    montarPdf().save(nomeArquivo())
+  async function baixarPdf() {
+    setMsg('')
+    try {
+      const doc = await montarPdf()
+      doc.save(nomeArquivo())
+    } catch (err) {
+      setMsg('Erro ao gerar o PDF: ' + (err.message || String(err)))
+    }
   }
 
   async function enviar() {
     setEnviando(true)
     setMsg('')
     try {
-      const doc = montarPdf()
+      const doc = await montarPdf()
       const blob = doc.output('blob')
       const numero = fabrica === 'timon' ? config.whatsapp_pedidos_timon : config.whatsapp_pedidos_eusebio
       const cliente = cab.fantasia || cab.razao_social || 'cliente'

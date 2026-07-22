@@ -44,7 +44,7 @@ export default function App() {
   if (!rep) return <PinLogin onSuccess={setRep} />
 
   return (
-    <div className="min-h-screen bg-bg text-white pb-24">
+    <div className="min-h-screen bg-bg text-white" style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}>
       <div className="max-w-2xl mx-auto p-5">
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -62,12 +62,16 @@ export default function App() {
         {tab === 'promocao' && <PromocaoView />}
       </div>
 
-      <nav className="fixed bottom-0 inset-x-0 bg-panel border-t border-border">
+      <nav
+        className="fixed bottom-0 inset-x-0 bg-panel border-t border-border"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
         <div className="max-w-2xl mx-auto grid grid-cols-4">
           {TABS.map((t) => (
             <button
               key={t.value}
               onClick={() => setTab(t.value)}
+              aria-current={tab === t.value ? 'page' : undefined}
               className={`flex flex-col items-center gap-1 py-3 text-xs font-medium ${
                 tab === t.value ? 'text-accent' : 'text-muted'
               }`}
